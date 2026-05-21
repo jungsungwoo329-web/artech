@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 My Music World v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+</head>
+<body>
+<div id="header">✦ My Music World ✦</div>
+<div id="sketch-wrapper">
+
+  <div id="zone-hud">LOADING...</div>
+  <div id="hud-hint">WASD / 방향키 이동 &nbsp;|&nbsp; 캐릭터에 다가가 상호작용</div>
+
+  <!-- NPC 말풍선 -->
+  <div id="npc-bubble">
+    <div class="bx" onclick="onBubbleClick()">
+      <div class="bn" id="bubble-name">NAME</div>
+      <div class="bt" id="bubble-text">...</div>
+      <div class="b-hint">▶ 탭하여 상호작용</div>
+    </div>
+  </div>
+
+  <!-- 음악 아이템 버튼 -->
+  <button id="music-item-btn" onclick="onMusicItemClick()">🎧</button>
+
+  <!-- 프로필 카드 팝업 -->
+  <div id="profile-card">
+    <div id="pc-header">
+      <span id="pc-title">PROFILE</span>
+      <button id="pc-close" onclick="closeProfileCard()">✕</button>
+    </div>
+    <div id="pc-body">
+      <div id="pc-left">
+        <canvas id="pc-char-canvas" width="90" height="110"></canvas>
+        <div id="pc-name"></div>
+        <div id="pc-bio"></div>
+      </div>
+      <div id="pc-right">
+        <div class="pc-music-label">⭐ 최애곡</div>
+        <div id="pc-fave-title"></div>
+        <div id="pc-fave-artist"></div>
+        <div class="pc-divider"></div>
+        <div class="pc-music-label">🎵 선정곡</div>
+        <div id="pc-songs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 포토부스 HUD -->
+  <div id="photobooth-hud">
+    <div id="pb-label">📸 PHOTO BOOTH</div>
+    <button id="pb-shoot-btn" onclick="shootPhoto()">▶ 촬영하기</button>
+  </div>
+
+  <!-- 포토 결과 오버레이 -->
+  <div id="pb-overlay">
+    <div id="pb-bg"></div>
+    <div id="pb-frame">
+      <canvas id="pb-canvas" width="400" height="260"></canvas>
+      <div id="pb-frame-label">📸</div>
+      <button id="pb-save-btn" onclick="savePbPhoto()">↓ 저장하기</button>
+      <button id="pb-close-btn" onclick="closePbOverlay()">닫기</button>
+    </div>
+  </div>
+
+  <!-- 갤러리 버튼 -->
+  <button id="gallery-open-btn" onclick="openGallery()">📂 사진함</button>
+
+  <!-- 갤러리 -->
+  <div id="gallery">
+    <div id="gallery-header">
+      <button id="gallery-close-btn" onclick="closeGallery()">✕ 닫기</button>
+      <div id="gallery-title">📂 PHOTO GALLERY</div>
+      <div style="width:60px"></div>
+    </div>
+    <div id="gallery-grid">
+      <div id="gallery-empty">아직 찍은 사진이 없어요</div>
+    </div>
+  </div>
+
+  <!-- ══════ 온보딩 ══════ -->
+  <div id="onboarding">
+
+    <!-- STEP 0: 로딩 -->
+    <div class="ob-screen active" id="ob-loading">
+      <div class="ob-logo">MY MUSIC WORLD<span>v 3.0</span></div>
+      <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+      <div class="loading-text" id="loading-text">LOADING...</div>
+    </div>
+
+    <!-- STEP 1: 음악 선정 -->
+    <div class="ob-screen" id="ob-music">
+      <div class="ob-step-label">STEP 01</div>
+      <div class="ob-title">음악을 선택해주세요</div>
+      <div class="music-wrap">
+        <div class="sec-title" style="margin-bottom:10px">🎵 총 4곡을 직접 입력해주세요 (곡 제목 + 아티스트)</div>
+        <div class="song-input-block">
+          <div class="song-num">⭐ 최애곡</div>
+          <input class="ob-input" id="s0-title" placeholder="곡 제목" />
+          <input class="ob-input" id="s0-artist" placeholder="아티스트" />
+        </div>
+        <div class="song-input-block">
+          <div class="song-num">🎵 2번째 곡</div>
+          <input class="ob-input" id="s1-title" placeholder="곡 제목" />
+          <input class="ob-input" id="s1-artist" placeholder="아티스트" />
+        </div>
+        <div class="song-input-block">
+          <div class="song-num">🎵 3번째 곡</div>
+          <input class="ob-input" id="s2-title" placeholder="곡 제목" />
+          <input class="ob-input" id="s2-artist" placeholder="아티스트" />
+        </div>
+        <div class="song-input-block">
+          <div class="song-num">🎵 4번째 곡</div>
+          <input class="ob-input" id="s3-title" placeholder="곡 제목" />
+          <input class="ob-input" id="s3-artist" placeholder="아티스트" />
+        </div>
+        <button class="ob-btn" id="music-next-btn" onclick="goToChar()">다음 →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: 캐릭터 생성 -->
+    <div class="ob-screen" id="ob-char">
+      <div class="ob-step-label">STEP 02</div>
+      <div class="ob-title">캐릭터를 만들어주세요</div>
+      <div class="ob-char-layout">
+        <div class="char-preview-col">
+          <div class="char-preview-label">PREVIEW</div>
+          <canvas id="char-canvas-preview" width="110" height="120"></canvas>
+        </div>
+        <div class="char-options">
+          <div class="char-opt-row">
+            <div class="char-opt-label">이름</div>
+            <input class="char-name-input" id="char-name-input" placeholder="닉네임" maxlength="8" oninput="updatePreview()"/>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">한줄소개</div>
+            <div class="bio-row" style="flex:1">
+              <input class="bio-input" id="bio-input" placeholder="나를 표현하는 한 마디 (최대 20자)" maxlength="20" oninput="updateBioCount()"/>
+              <span class="bio-count" id="bio-count">0/20</span>
+            </div>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">셔츠</div>
+            <div class="swatches" id="shirt-sw"></div>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">바지</div>
+            <div class="swatches" id="pants-sw"></div>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">머리</div>
+            <div class="swatches" id="hair-sw"></div>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">피부</div>
+            <div class="swatches" id="skin-sw"></div>
+          </div>
+          <div class="char-opt-row">
+            <div class="char-opt-label">악세서리</div>
+            <div class="swatches" id="acc-sw"></div>
+          </div>
+        </div>
+      </div>
+      <button class="ob-btn" style="margin-top:16px" onclick="startWorld()">월드 입장 ▶</button>
+    </div>
+
+  </div><!-- end onboarding -->
+</div><!-- end sketch-wrapper -->
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07071a;--panel:rgba(8,8,28,.97);--border:rgba(255,255,255,.08);
+  --text:#e8e8ff;--muted:#6a6a9a;--accent:#a090ff;
+}
+body{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;overflow:hidden;user-select:none}
+#header{color:var(--text);font-size:11px;letter-spacing:4px;margin-bottom:14px;opacity:.7}
+#sketch-wrapper{position:relative;width:860px;height:540px}
+#sketch-wrapper canvas{display:block!important;border:1px solid rgba(120,100,255,.3)!important;box-shadow:0 0 80px rgba(100,80,255,.15),0 0 160px rgba(80,60,200,.1)!important;image-rendering:pixelated}
+
+/* ── 구역 HUD ── */
+#zone-hud{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-size:7px;color:rgba(255,255,255,.5);letter-spacing:3px;pointer-events:none;z-index:10;background:rgba(0,0,0,.3);padding:4px 12px}
+#hud-hint{position:absolute;top:34px;left:50%;transform:translateX(-50%);font-size:6px;color:rgba(180,180,220,.28);letter-spacing:2px;white-space:nowrap;pointer-events:none;z-index:10}
+
+/* ── NPC 말풍선 ── */
+#npc-bubble{position:absolute;top:0;left:0;z-index:25;opacity:0;transition:opacity .22s;pointer-events:none}
+#npc-bubble.show{opacity:1;pointer-events:auto}
+.bx{position:absolute;background:rgba(8,8,28,.94);border:1px solid rgba(200,200,255,.28);padding:10px 14px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-16px;cursor:pointer;transition:border-color .2s,background .2s}
+.bx:hover{background:rgba(20,20,50,.98);border-color:rgba(160,144,255,.7)}
+.bx::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top:7px solid rgba(200,200,255,.28)}
+.bx::before{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top:6px solid rgba(8,8,28,.94);z-index:1}
+.bn{font-size:6px;letter-spacing:2px;margin-bottom:4px;opacity:.55;color:var(--text)}
+.bt{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;color:var(--text);line-height:1.5}
+.b-hint{font-size:5px;color:var(--accent);margin-top:4px;letter-spacing:1px;opacity:.8}
+
+/* ── 음악 아이템 버튼 ── */
+#music-item-btn{position:absolute;z-index:26;cursor:pointer;pointer-events:auto;background:none;border:none;font-size:16px;transform:translate(-50%,-100%) translateY(-46px);animation:musicFloat 2s ease-in-out infinite;display:none}
+@keyframes musicFloat{0%,100%{transform:translate(-50%,-100%) translateY(-46px)}50%{transform:translate(-50%,-100%) translateY(-52px)}}
+
+/* ── 프로필 카드 팝업 ── */
+#profile-card{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:70;width:400px;background:var(--panel);border:1px solid rgba(160,144,255,.4)}
+#profile-card.show{display:block}
+#pc-header{background:rgba(160,144,255,.12);padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+#pc-title{font-size:8px;color:var(--accent);letter-spacing:3px}
+#pc-close{background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Press Start 2P',monospace;font-size:8px}
+#pc-body{display:flex;gap:0}
+#pc-left{width:120px;flex-shrink:0;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;border-right:1px solid rgba(255,255,255,.06)}
+#pc-char-canvas{image-rendering:pixelated;background:rgba(255,255,255,.02)}
+#pc-name{font-size:8px;color:var(--text);letter-spacing:2px;text-align:center;margin-top:4px}
+#pc-bio{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--muted);text-align:center;line-height:1.5;word-break:break-all}
+#pc-right{flex:1;padding:16px 16px}
+.pc-music-label{font-size:6px;color:var(--accent);letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+#pc-fave-title{font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#ffd700;margin-bottom:2px}
+#pc-fave-artist{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--muted);margin-bottom:12px}
+.pc-divider{height:1px;background:var(--border);margin-bottom:10px}
+.pc-song-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.pc-song-emoji{font-size:14px;width:20px;text-align:center}
+.pc-song-title{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;color:var(--text)}
+.pc-song-artist{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:var(--muted)}
+
+/* ── 포토부스 HUD ── */
+#photobooth-hud{display:none;position:absolute;bottom:50px;left:50%;transform:translateX(-50%);z-index:40;text-align:center}
+#photobooth-hud.show{display:block}
+#pb-label{font-size:7px;color:var(--accent);letter-spacing:2px;margin-bottom:8px}
+#pb-shoot-btn{font-family:'Press Start 2P',monospace;font-size:8px;color:#07071a;background:var(--accent);border:none;padding:10px 22px;cursor:pointer;letter-spacing:2px;transition:background .15s}
+#pb-shoot-btn:hover{background:#c0b4ff}
+
+/* ── 포토부스 촬영 오버레이 ── */
+#pb-overlay{display:none;position:absolute;inset:0;z-index:75;flex-direction:column;align-items:center;justify-content:center}
+#pb-overlay.show{display:flex}
+#pb-bg{position:absolute;inset:0;opacity:.92}
+#pb-frame{position:relative;z-index:2;border:4px solid rgba(255,255,255,.8);padding:6px;background:rgba(0,0,0,.3);text-align:center}
+#pb-canvas{image-rendering:pixelated;display:block}
+#pb-frame-label{font-size:7px;color:rgba(255,255,255,.7);letter-spacing:2px;margin-top:6px}
+#pb-save-btn{margin-top:10px;font-family:'Press Start 2P',monospace;font-size:7px;color:#07071a;background:#fff;border:none;padding:8px 18px;cursor:pointer;letter-spacing:1px}
+#pb-close-btn{margin-top:6px;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,255,255,.5);background:none;border:none;cursor:pointer;letter-spacing:1px}
+
+/* ── 갤러리 ── */
+#gallery{display:none;position:absolute;inset:0;background:rgba(7,7,26,.96);z-index:80;flex-direction:column;align-items:center;padding:20px}
+#gallery.show{display:flex}
+#gallery-header{display:flex;align-items:center;width:100%;margin-bottom:14px}
+#gallery-title{font-size:9px;color:var(--accent);letter-spacing:4px;flex:1;text-align:center}
+#gallery-close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Press Start 2P',monospace;font-size:7px}
+#gallery-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;overflow-y:auto;max-height:440px;width:100%}
+.g-item{position:relative;border:1px solid rgba(255,255,255,.1);transition:border-color .2s}
+.g-item:hover{border-color:var(--accent)}
+.g-item img{display:block;width:190px;height:120px;object-fit:cover;image-rendering:pixelated}
+.g-item-label{font-size:5px;color:var(--muted);padding:3px 6px;text-align:center}
+.g-dl{position:absolute;top:3px;right:3px;background:rgba(7,7,26,.9);border:1px solid rgba(160,144,255,.4);color:var(--accent);font-family:'Press Start 2P',monospace;font-size:5px;padding:3px 5px;cursor:pointer;opacity:0;transition:opacity .2s}
+.g-item:hover .g-dl{opacity:1}
+#gallery-empty{font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:40px}
+#gallery-open-btn{position:absolute;bottom:14px;left:14px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 9px;cursor:pointer;z-index:10;transition:color .2s,border-color .2s}
+#gallery-open-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ════ 온보딩 ════ */
+#onboarding{position:absolute;inset:0;z-index:100;background:var(--bg);overflow:hidden}
+.ob-screen{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center}
+.ob-screen.active{display:flex}
+
+/* 로딩 */
+.ob-logo{font-size:17px;color:var(--accent);letter-spacing:6px;text-align:center;line-height:2.2;margin-bottom:28px}
+.ob-logo span{font-size:9px;display:block;color:var(--muted);letter-spacing:4px}
+.loading-bar-wrap{width:260px;height:3px;background:rgba(255,255,255,.07);margin-bottom:10px}
+.loading-bar{height:3px;background:var(--accent);width:0}
+.loading-text{font-size:7px;color:var(--muted);letter-spacing:2px}
+
+/* 음악선정 */
+#ob-music{padding:20px 30px;gap:0;overflow-y:auto;justify-content:flex-start;padding-top:24px}
+.ob-step-label{font-size:7px;color:var(--accent);letter-spacing:3px;margin-bottom:4px;align-self:flex-start}
+.ob-title{font-size:12px;color:var(--text);letter-spacing:2px;margin-bottom:14px;align-self:flex-start}
+.music-wrap{width:100%;max-width:600px}
+.sec-title{font-size:6px;color:var(--muted);letter-spacing:3px;margin-bottom:8px;text-transform:uppercase}
+.song-input-block{display:grid;grid-template-columns:52px 1fr 1fr;align-items:center;gap:7px;margin-bottom:7px}
+.song-num{font-size:6px;color:var(--accent);letter-spacing:1px;white-space:nowrap}
+.ob-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:8px 11px;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--text);outline:none;transition:border-color .2s;width:100%}
+.ob-input:focus{border-color:var(--accent)}
+.ob-input::placeholder{color:var(--muted);font-size:11px}
+.ob-btn{font-family:'Press Start 2P',monospace;font-size:8px;color:#07071a;background:var(--accent);border:none;padding:11px 26px;cursor:pointer;letter-spacing:2px;transition:background .2s;align-self:flex-start;margin-top:8px}
+.ob-btn:hover{background:#c0b4ff}
+.ob-btn:disabled{background:var(--muted);cursor:not-allowed}
+/* 한 줄 소개 */
+.bio-row{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.bio-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:7px 10px;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--text);outline:none;flex:1}
+.bio-input:focus{border-color:var(--accent)}
+.bio-input::placeholder{color:var(--muted);font-size:11px}
+.bio-count{font-size:9px;color:var(--muted);white-space:nowrap;min-width:36px;text-align:right}
+
+/* 캐릭터 생성 */
+#ob-char{gap:14px}
+.ob-char-layout{display:flex;gap:28px;align-items:flex-start}
+.char-preview-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.char-preview-label{font-size:6px;color:var(--muted);letter-spacing:2px}
+#char-canvas-preview{image-rendering:pixelated;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)}
+.char-options{display:flex;flex-direction:column;gap:10px;width:340px}
+.char-opt-row{display:flex;align-items:center;gap:10px}
+.char-opt-label{font-size:6px;color:var(--muted);letter-spacing:1px;width:46px;flex-shrink:0}
+.swatches{display:flex;gap:5px;flex-wrap:wrap}
+.swatch{width:20px;height:20px;cursor:pointer;border:2px solid transparent;transition:border-color .15s;flex-shrink:0}
+.swatch.active{border-color:#fff}
+.acc-swatch{width:28px;height:20px;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);transition:border-color .2s,background .2s}
+.acc-swatch.active{border-color:var(--accent);background:rgba(160,144,255,.12)}
+.char-name-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:7px 10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1}
+.char-name-input:focus{border-color:var(--accent)}
